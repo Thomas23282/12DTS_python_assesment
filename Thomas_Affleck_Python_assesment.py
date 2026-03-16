@@ -77,3 +77,4 @@ def fuel():
 
 #Main
 start_menu()
+#explore()
