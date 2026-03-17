@@ -4,11 +4,13 @@ import time
 
 # Global variables
 materials = []
-fuel_value = 0
+fuel_value = 50
 ship_fuel = 0
 ship_broken = True
+fuel_in_ship = 0
 TEXT_SLEEP_TIME = 0.1
 LINE_SLEEP_TIME = 0.5
+FUEL_DELAY = 1
 hints = 5
 
 
@@ -20,7 +22,7 @@ def slow_type(sentence):  # Function to enable typewriter style typing.
     print()
 
 
-def start_menu():  # Menu to run at start, need too add function to restart whenever r key pressed.
+def start_menu():  # Menu to run at start, need to add function to restart whenever r key pressed.
     global name
     slow_type("You are stuck on the planet Blam")
     time.sleep(LINE_SLEEP_TIME)
@@ -63,6 +65,7 @@ def game_menu():
         while True:
             try:
                 print("Press 1 to go find materials to fix your ship. Press 2 to work on your ship. Press 3 to fuel your ship.")
+                print("To fix your ship you need to use 3 steel, 2 copper and 1 stone. You will also need to find at least 20 units of fuel to put into your ship.")
                 choice = int(input())
                 if choice == 1:
                     explore()
@@ -89,19 +92,63 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
         print("You have no materials! Returning to menu")
         game_menu()
     else:
-        print(f"You have {materials} in your inventory")
+        while True:
+            try:
+                print(f"You have {materials} in your inventory")
+                print("Please type what material you want to use")
+                materials_to_use = input().lower()
+                break
+            except ValueError:
+                print("That's not right")
+
+        while True:
+            try:
+                print(f"How many of {materials_to_use} do you want to use?")
+                quantity_materials_use = int(input())
+                print(f"You want to use {quantity_materials_use} of {materials_to_use}.")
+            except ValueError:
+                print("That's not right")
 
 
-def fuel():
+def fuel(): # Player to select how much fuel to put into ship, links to a function at the end if ship is fueled and fixed, otherwise returns to menu
+    global ship_broken  # Function done?
     global fuel_value
+    global fuel_in_ship
     if fuel_value <= 0:
         print("You have no fuel! Returning to menu")
         game_menu()
     else:
         print(f"You have {fuel_value} units of fuel")
-        print("Type a number for how much fuel you want to put in your ship")
+        while True:
+            try:
+                print("Type a number for how much fuel you want to put in your ship")
+                fuel_into_ship = int(input())
+                if fuel_into_ship > fuel_value:
+                    print("You don't have that much fuel!")
+                else:
+                    print(f"Putting {fuel_into_ship} units of fuel into ship...")
+                    time.sleep(FUEL_DELAY)
+                    fuel_in_ship = fuel_in_ship + fuel_into_ship
+                    print(f"Your ship now has {fuel_in_ship} units of fuel in it")
+                    fuel_value = fuel_value - fuel_into_ship
+                    break
+            except ValueError:
+                print("That's not a number!")
+        if fuel_in_ship >= 20 and ship_broken == False:
+            take_off()
+        elif fuel_in_ship >= 20 and ship_broken == True:
+            print("Your ship is fueled but not fixed! Returning to menu")
+            game_menu()
+        elif fuel_in_ship < 20 and ship_broken == False:
+            print("Your ship is fixed but you don't have enough fuel to take off! You need at least 20 units in your ship to take off. Find some more and then come back!")
+            game_menu()
+        elif fuel_in_ship < 20 and ship_broken == True:
+            print("Your ship is still broken and you don't have enough fuel to take off! Go fix your ship and then put in at least 20 units of fuel to take off")
+            game_menu()
 
+
+def take_off():
+    print("Take off")
 
 # Main
 start_menu()
-# explore()
