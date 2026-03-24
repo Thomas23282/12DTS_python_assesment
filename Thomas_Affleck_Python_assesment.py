@@ -1,9 +1,10 @@
 # Libraries
 import random
 import time
+import keyboard
 
 # Global variables
-materials = ["stone", "copper", "steel", "steel"] # Need to either make a dictionary with type and quantity or store multiple copies of same thing and then check over it to see how many in inventory.
+materials = ["stone", "copper", "steel", "steel", "steel", "copper"] # Need to either make a dictionary with type and quantity or store multiple copies of same thing and then check over it to see how many in inventory.
 used_materials = []
 fuel_value = 50
 ship_fuel = 0
@@ -50,7 +51,8 @@ def start_menu():  # Menu to run at start, need to add function to restart whene
 
 def game_menu():
     global ship_broken
-    if ship_broken == False and fuel_value > 0:
+    global fuel_in_ship
+    if ship_broken == False and fuel_in_ship < 20:
         while True:
             try:
                 print("Press 1 to fuel your ship")
@@ -65,8 +67,10 @@ def game_menu():
     else:
         while True:
             try:
+                print()
                 print(
                     "To fix your ship you need to use 3 steel, 2 copper and 1 stone. You will also need to find at least 20 units of fuel to put into your ship.")
+                print()
                 print("Press 1 to go find materials to fix your ship. Press 2 to work on your ship. Press 3 to fuel your ship.")
                 choice = int(input())
                 if choice == 1:
@@ -91,6 +95,7 @@ def explore():
 def garage():  # Make it so you also get fuel from this option, possibly raw oil to refine?? Need to decide how to run search for materials too, might design different areas...
     global materials # Function done? Think so...
     global used_materials
+    global ship_broken
     if len(materials) == 0:
         print("You have no materials! Returning to menu")
         game_menu()
@@ -118,12 +123,20 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
                     print("You don't have enough of those!")
                 else:
                     print(f"You want to use {quantity_materials_use} {materials_to_use}.")
-                    print("Applying materials")
+                    print()
+                    print("Applying materials...")
                     for i in range(quantity_materials_use):
                         used_materials.append(materials_to_use) # Might be not needed with thing below.
                         materials.remove(materials_to_use)
                     print(used_materials) # Temp to ensure items added to used list
-                    game_menu()
+                    if used_materials.count("steel") == 3 and used_materials.count("copper") == 2 and used_materials.count("stone") == 1:#3 steel, 2 copper, 1 stone
+                        print("You have fixed your ship!")
+                        ship_broken = False
+                        game_menu()
+                        break
+                    else:
+                        game_menu()
+                        break
             except ValueError:
                 print("That's not right")
 
@@ -168,10 +181,11 @@ def fuel(): # Player to select how much fuel to put into ship, links to a functi
 
 
 def take_off():
-    print("Take off")
+    print("You have fixed your ship and are now ready to take off!")
+
 
 # Main
-start_menu()
+#start_menu()
 
 
 #Testing/addition zone:
@@ -179,3 +193,5 @@ start_menu()
 #materials_count = materials.count("Stone")
 #print(materials_count)
 #materials.remove(materials_to_use)
+
+"
