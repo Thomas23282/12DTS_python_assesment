@@ -89,7 +89,7 @@ def explore():
 
 
 def garage():  # Make it so you also get fuel from this option, possibly raw oil to refine?? Need to decide how to run search for materials too, might design different areas...
-    global materials
+    global materials # Function done? Think so...
     global used_materials
     if len(materials) == 0:
         print("You have no materials! Returning to menu")
@@ -97,8 +97,10 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
     else:
         while True:
             try:
-                print(f"You have {materials} in your inventory") # Need to make this print nicer, print one, new line then print next
-                print("Please type what material you want to use")
+                print("In your inventory you have:")
+                for item in materials:
+                    print(item)
+                print("Please type what material you want to use:")
                 materials_to_use = input().lower()
                 if materials_to_use not in materials:
                     print("You don't have those materials.")
@@ -118,7 +120,8 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
                     print(f"You want to use {quantity_materials_use} {materials_to_use}.")
                     print("Applying materials")
                     for i in range(quantity_materials_use):
-                        used_materials.append(materials_to_use)
+                        used_materials.append(materials_to_use) # Might be not needed with thing below.
+                        materials.remove(materials_to_use)
                     print(used_materials) # Temp to ensure items added to used list
                     game_menu()
             except ValueError:
@@ -170,5 +173,9 @@ def take_off():
 # Main
 start_menu()
 
+
+#Testing/addition zone:
+
 #materials_count = materials.count("Stone")
 #print(materials_count)
+#materials.remove(materials_to_use)
