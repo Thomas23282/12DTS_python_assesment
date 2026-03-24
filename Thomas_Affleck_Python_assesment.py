@@ -3,7 +3,7 @@ import random
 import time
 
 # Global variables
-materials = ["stone", "copper", "steel", "steel"] # Need to either make a dictionary with type and quantity or store multiple copies of same thing and then check over it to see how many in inventory.
+materials = ["stone", "copper", "steel"] # Need to either make a dictionary with type and quantity or store multiple copies of same thing and then check over it to see how many in inventory.
 used_materials = []
 fuel_value = 50
 ship_fuel = 0
