@@ -1,7 +1,7 @@
 # Libraries
 import random
 import time
-import keyboard
+#import keyboard
 
 # Global variables
 materials = ["stone", "copper", "steel", "steel", "steel", "copper"] # Need to either make a dictionary with type and quantity or store multiple copies of same thing and then check over it to see how many in inventory.
@@ -88,7 +88,7 @@ def game_menu():
                 print("That's not a number")
 
 
-def explore():
+def explore(): # Maybe similar to the pokemon game, going between areas? Could do word puzzles when in an area???
     print("Explore")
 
 
@@ -121,12 +121,14 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
                 materials_count = materials.count(materials_to_use)
                 if quantity_materials_use > materials_count:  # Need to ensure that it checks the correct spot in the list for the quantity, should work now.
                     print("You don't have enough of those!")
+                elif quantity_materials_use <= 0:
+                    print("That's not the right number!")
                 else:
                     print(f"You want to use {quantity_materials_use} {materials_to_use}.")
                     print()
                     print("Applying materials...")
-                    for i in range(quantity_materials_use):
-                        used_materials.append(materials_to_use) # Might be not needed with thing below.
+                    for i in range(quantity_materials_use): # Adding used materials to used materials list, so it can check if player has applied all the correct materials to ship.
+                        used_materials.append(materials_to_use) # Might be not needed with thing below. Needed...
                         materials.remove(materials_to_use)
                     print(used_materials) # Temp to ensure items added to used list
                     if used_materials.count("steel") == 3 and used_materials.count("copper") == 2 and used_materials.count("stone") == 1:#3 steel, 2 copper, 1 stone
@@ -156,6 +158,8 @@ def fuel(): # Player to select how much fuel to put into ship, links to a functi
                 fuel_into_ship = int(input())
                 if fuel_into_ship > fuel_value:
                     print("You don't have that much fuel!")
+                elif fuel_into_ship <= 0:
+                    print("That's not the right number!")
                 else:
                     print(f"Putting {fuel_into_ship} units of fuel into ship...")
                     time.sleep(FUEL_DELAY)
@@ -182,10 +186,28 @@ def fuel(): # Player to select how much fuel to put into ship, links to a functi
 
 def take_off():
     print("You have fixed your ship and are now ready to take off!")
+    while True:
+        try:
+            print("Press the w key to take off")
+            choice = input().lower()
+            if choice == "w":
+                print("TAKE OFF!!!")
+                in_space()
+                break
+            else:
+                print("How'd you mess that up?")
+        except ValueError:
+            print("How'd you mess that up?")
+
+def in_space():
+    print("In space")
+    print("Please pick what planet you want to go to")
+    planet_choice = input()
 
 
 # Main
 #start_menu()
+take_off()
 
 
 #Testing/addition zone:
@@ -194,4 +216,3 @@ def take_off():
 #print(materials_count)
 #materials.remove(materials_to_use)
 
-"
