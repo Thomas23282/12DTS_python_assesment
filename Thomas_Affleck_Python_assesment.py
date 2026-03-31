@@ -108,11 +108,10 @@ def game_menu():
             except ValueError:
                 print("That's not a number")
     else:
+        print("To fix your ship you need to use 3 steel, 2 copper and 1 stone. You will also need to find at least 20 units of fuel to put into your ship.")
+        print("It's highly recommended you gather more materials now than you need to fix your ship, as you might not be able to find materials on other planets...")
         while True:
             try:
-                print()
-                print(
-                    "To fix your ship you need to use 3 steel, 2 copper and 1 stone. You will also need to find at least 20 units of fuel to put into your ship.")
                 print()
                 print("Press 1 to go find materials to fix your ship. Press 2 to work on your ship. Press 3 to fuel your ship. Press 4 to restart")
                 choice = int(input())
@@ -172,10 +171,10 @@ def explore(): # Maybe similar to the pokemon game, going between areas? Could d
             materials.append(material)
         print(f"You found {amount} {material}")
         time.sleep(MATERIAL_SLEEP_TIME)
-    fuel = random.randint(3,7) # Gives player random amount of fuel between 3 and 7, might make it give more, to make it not take so long
-    fuel_value += fuel
-    print(f"You found {fuel} units of fuel")
-    time.sleep(MATERIAL_SLEEP_TIME)
+        fuel = random.randint(3,7) # Gives player random amount of fuel between 3 and 7, might make it give more, to make it not take so long
+        fuel_value += fuel
+        print(f"You found {fuel} units of fuel")
+        time.sleep(MATERIAL_SLEEP_TIME)
     game_menu()
 
 
@@ -183,6 +182,9 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
     global materials # Function done? Think so...
     global used_materials
     global ship_broken
+    steel_count = materials.count("steel")
+    copper_count = materials.count("copper")
+    stone_count = materials.count("stone")
     if len(materials) == 0 and len(used_materials) == 0:
         slow_type("You need to find some materials before you can use them on your ship!")
         game_menu()
@@ -197,11 +199,14 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
                     while True:
                         try:
                             print("In your inventory you have:")
-                            for item in materials:
-                                print(item)
-                            print("Please type what material you want to use:")
+                            print(f"Steel: {steel_count}")
+                            print(f"Copper: {copper_count}")
+                            print(f"Stone: {stone_count}")
+                            print("Please type what material you want to use, or type back to go back to the menu:")
                             materials_to_use = input().lower()
-                            if materials_to_use not in materials:
+                            if materials_to_use == "back":
+                                game_menu()
+                            elif materials_to_use not in materials:
                                 print("You don't have those materials.")
                             else:
                                 break
@@ -339,7 +344,46 @@ def in_space():
 
 def planet():
     global planet_name
+    global fuel_in_ship
+    global fuel_value
     slow_type(f"You are now on the planet {planet_name}")
+    print(f"You have {fuel_in_ship} units of fuel left in your ship")
+    print(f"You have {fuel_value} units of fuel")
+
+
+def lose_game():
+    slow_type("You are stuck in space")
+    slow_type("You lose...")
+    slow_type("The game will restart in 10 seconds or press r to restart now")
+    while True:
+        try:
+            choice = input().lower()
+            if choice == "r":
+                restart()
+                break
+            else:
+                print("That's not the right key but the game will restart now anyway")
+                restart()
+                break
+        except ValueError:
+            print("Input error")
+
+def win_game():
+    slow_type("Congrats you made it back to earth!")
+    slow_type("You win!!!")
+    slow_type("The game will restart in 10 seconds or press r to restart now")
+    while True:
+        try:
+            choice = input().lower()
+            if choice == "r":
+                restart()
+                break
+            else:
+                print("That's not the right key but the game will restart now anyway")
+                restart()
+                break
+        except ValueError:
+            print("Input error")
 
 # Main
 start_menu()
