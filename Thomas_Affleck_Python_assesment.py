@@ -6,7 +6,8 @@ import time
 # Global variables
 materials = [] # Need to either make a dictionary with type and quantity or store multiple copies of same thing and then check over it to see how many in inventory.
 used_materials = []
-fuel_value = 50
+planets = ["Blam", "Axiom", "Delta Majora"]
+fuel_value = 0
 ship_fuel = 0
 ship_broken = True
 fuel_in_ship = 0
@@ -14,11 +15,36 @@ TEXT_SLEEP_TIME = 0.1
 LINE_SLEEP_TIME = 0.5
 MATERIAL_SLEEP_TIME = 1
 FUEL_DELAY = 1
+planet_name = 0
 hints = 5
+name = 0
 areas = ["Metal field", "Copper cave", "Stony plains"]
 
 
 # Functions
+def restart():
+    global name
+    global ship_broken
+    global fuel_in_ship
+    global materials
+    global fuel_value
+    global used_materials
+    name = 0
+    ship_broken = True
+    fuel_in_ship = 0
+    materials = []
+    fuel_value = 0
+    used_materials = []
+    start_menu()
+
+
+def show_progress():
+    global used_materials
+    print("Repair progress:")
+    print("Steel:", used_materials.count("steel"), "/ 3")
+    print("Copper:", used_materials.count("copper"), "/ 2")
+    print("Stone:", used_materials.count("stone"), "/ 1")
+
 def slow_type(sentence):  # Function to enable typewriter style typing.
     for i in range(len(sentence)):
         print(sentence[i], end="")
@@ -88,7 +114,7 @@ def game_menu():
                 print(
                     "To fix your ship you need to use 3 steel, 2 copper and 1 stone. You will also need to find at least 20 units of fuel to put into your ship.")
                 print()
-                print("Press 1 to go find materials to fix your ship. Press 2 to work on your ship. Press 3 to fuel your ship.")
+                print("Press 1 to go find materials to fix your ship. Press 2 to work on your ship. Press 3 to fuel your ship. Press 4 to restart")
                 choice = int(input())
                 if choice == 1:
                     explore()
@@ -98,6 +124,9 @@ def game_menu():
                     break
                 elif choice == 3:
                     fuel()
+                    break
+                elif choice == 4:
+                    restart()
                     break
                 else:
                     print("That's not the right number")
@@ -115,6 +144,7 @@ def explore(): # Maybe similar to the pokemon game, going between areas? Could d
             print("1: Metal field")
             print("2: Copper cave")
             print("3: Stony plains")
+            print("4: Restart game")
             choice = int(input())
             if choice == 1:
                 material = "steel"
@@ -124,6 +154,9 @@ def explore(): # Maybe similar to the pokemon game, going between areas? Could d
                 break
             elif choice == 3:
                 material = "stone"
+                break
+            elif choice == 4:
+                restart()
                 break
             else:
                 print("That's not a place")
@@ -150,14 +183,15 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
     global materials # Function done? Think so...
     global used_materials
     global ship_broken
-    if len(materials) == 0:
-        print("You have no materials! Returning to menu")
+    if len(materials) == 0 and len(used_materials) == 0:
+        slow_type("You need to find some materials before you can use them on your ship!")
         game_menu()
     else:
         while True:
             try:
                 print("Press 1 to use materials")
                 print("Press 2 to see materials applied to ship")
+                print("Press 3 to restart")
                 choice = int(input())
                 if choice == 1:
                     while True:
@@ -203,12 +237,13 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
                             print("That's not right")
 
                 elif choice == 2:
-                    if used_materials.count() == 0:
-                        print("You've used not materials")
+                    if len(used_materials) == 0:
+                        print("You've not used any materials")
                     else:
-                        print("Materials used:")
-                        for material in used_materials:
-                            print(material)
+                        show_progress()
+                elif choice == 3:
+                    restart()
+                    break
             except ValueError:
                 print("That's not a number")
 
@@ -258,11 +293,14 @@ def take_off():
     time.sleep(1)
     while True:
         try:
-            print("Press the w key to take off")
+            print("Press the W key to take off or R to restart")
             choice = input().lower()
             if choice == "w":
                 print("TAKE OFF!!!")
                 in_space()
+                break
+            elif choice == "r":
+                restart()
                 break
             else:
                 print("How'd you mess that up?")
@@ -270,10 +308,38 @@ def take_off():
             print("How'd you mess that up?")
 
 def in_space():
+    global planets
+    global planet_name
     print("In space")
     print("Please pick what planet you want to go to")
-    planet_choice = input()
+    while True:
+        try:
+            print("Press 1 to go back to Blam, press 2 for Axiom, press 3 for Delta Majora or press 4 to restart:")
+            planet_choice = input()
+            if planet_choice == 1:
+                planet_name = planets[0]
+                planet()
+                break
+            elif planet_choice == 2:
+                planet_name = planets[1]
+                planet()
+                break
+            elif planet_choice == 3:
+                planet_name = planets[2]
+                planet()
+                break
+            elif planet_choice == 4:
+                restart()
+                break
+            else:
+                print("That's not the right number")
+        except ValueError:
+            print("That's not a number!")
 
+
+def planet():
+    global planet_name
+    slow_type(f"You are now on the planet {planet_name}")
 
 # Main
 start_menu()
