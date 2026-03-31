@@ -19,6 +19,8 @@ planet_name = 0
 hints = 5
 name = 0
 areas = ["Metal field", "Copper cave", "Stony plains"]
+ship_parts = {"engine": "ok", "hull": "ok", "navigation": "ok"}
+fuel_used = [15,20]
 
 
 # Functions
@@ -29,6 +31,7 @@ def restart():
     global materials
     global fuel_value
     global used_materials
+    global ship_parts
     name = 0
     ship_broken = True
     fuel_in_ship = 0
@@ -36,6 +39,7 @@ def restart():
     fuel_value = 0
     used_materials = []
     start_menu()
+    ship_parts = {"engine": "ok", "hull": "ok", "navigation": "ok"}
 
 
 def show_progress():
@@ -44,6 +48,7 @@ def show_progress():
     print("Steel:", used_materials.count("steel"), "/ 3")
     print("Copper:", used_materials.count("copper"), "/ 2")
     print("Stone:", used_materials.count("stone"), "/ 1")
+    game_menu()
 
 def slow_type(sentence):  # Function to enable typewriter style typing.
     for i in range(len(sentence)):
@@ -68,7 +73,9 @@ def word_puzzle(word):
         return False
 
 def start_menu():  # Menu to run at start, need to add function to restart whenever r key pressed.
-    global name
+    global title_name
+    global planet_name
+    planet_name = planets[0]
     slow_type("You are stuck on the planet Blam")
     time.sleep(LINE_SLEEP_TIME)
     slow_type("Your ship is broken down.")
@@ -88,21 +95,30 @@ def start_menu():  # Menu to run at start, need to add function to restart whene
         except ValueError:
             print("That's not a number")
     name = input("What is your name? ")
-    print(f"Your name is {name}")
+    title_name = name.title()
+    print(f"Your name is {title_name}")
     game_menu()
 
 
 def game_menu():
     global ship_broken
     global fuel_in_ship
+    global fuel_value
     if ship_broken == False and fuel_in_ship < 20:
         while True:
             try:
-                print("Press 1 to fuel your ship")
+                print("Press 1 to fuel your ship or 2 to get more fuel")
                 choice2 = int(input())
                 if choice2 == 1:
-                    fuel()
+                    fuel_menu()
                     break
+                elif choice2 == 2:
+                    material = "fuel"
+                    if word_puzzle(material):
+                        fuel = random.randint(3,7)
+                        fuel_value += fuel
+                        print(f"You found {fuel} units of fuel")
+                        time.sleep(MATERIAL_SLEEP_TIME)
                 else:
                     print("That's not the right number")
             except ValueError:
@@ -122,7 +138,7 @@ def game_menu():
                     garage()
                     break
                 elif choice == 3:
-                    fuel()
+                    fuel_menu()
                     break
                 elif choice == 4:
                     restart()
@@ -136,6 +152,7 @@ def game_menu():
 def explore(): # Maybe similar to the pokemon game, going between areas? Could do word puzzles when in an area???
     global materials
     global fuel_value
+    global planet_name
     print()
     while True:
         try:
@@ -175,13 +192,20 @@ def explore(): # Maybe similar to the pokemon game, going between areas? Could d
         fuel_value += fuel
         print(f"You found {fuel} units of fuel")
         time.sleep(MATERIAL_SLEEP_TIME)
-    game_menu()
+    if planet_name == "Blam":
+        game_menu()
+    elif planet_name == "Axiom" or planet_name == "Delta Majora":
+        planet()
+
 
 
 def garage():  # Make it so you also get fuel from this option, possibly raw oil to refine?? Need to decide how to run search for materials too, might design different areas...
     global materials # Function done? Think so...
     global used_materials
     global ship_broken
+    global steel_count
+    global copper_count
+    global stone_count
     steel_count = materials.count("steel")
     copper_count = materials.count("copper")
     stone_count = materials.count("stone")
@@ -215,10 +239,13 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
 
                     while True:
                         try:
-                            print(f"How many of {materials_to_use} do you want to use?")
+                            print(f"How many of {materials_to_use} do you want to use, or type 0 to return to menu.")
                             quantity_materials_use = int(input())
                             materials_count = materials.count(materials_to_use)
-                            if quantity_materials_use > materials_count:  # Need to ensure that it checks the correct spot in the list for the quantity, should work now.
+                            if quantity_materials_use == 0:
+                                game_menu()
+                                break
+                            elif quantity_materials_use > materials_count:  # Need to ensure that it checks the correct spot in the list for the quantity, should work now.
                                 print("You don't have enough of those!")
                             elif quantity_materials_use <= 0:
                                 print("That's not the right number!")
@@ -252,7 +279,7 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
             except ValueError:
                 print("That's not a number")
 
-def fuel(): # Player to select how much fuel to put into ship, links to a function at the end if ship is fueled and fixed, otherwise returns to menu
+def fuel_menu(): # Player to select how much fuel to put into ship, links to a function at the end if ship is fueled and fixed, otherwise returns to menu
     global ship_broken  # Function done?
     global fuel_value
     global fuel_in_ship
@@ -263,11 +290,14 @@ def fuel(): # Player to select how much fuel to put into ship, links to a functi
         print(f"You have {fuel_value} units of fuel")
         while True:
             try:
-                print("Type a number for how much fuel you want to put in your ship")
+                print("Type a number for how much fuel you want to put in your ship, or type 0 to return")
                 fuel_into_ship = int(input())
-                if fuel_into_ship > fuel_value:
+                if fuel_into_ship == 0:
+                    game_menu()
+                    break
+                elif fuel_into_ship > fuel_value:
                     print("You don't have that much fuel!")
-                elif fuel_into_ship <= 0:
+                elif fuel_into_ship < 0:
                     print("That's not the right number!")
                 else:
                     print(f"Putting {fuel_into_ship} units of fuel into ship...")
@@ -315,25 +345,25 @@ def take_off():
 def in_space():
     global planets
     global planet_name
+    global fuel_in_ship
+    global fuel_used
     print("In space")
     print("Please pick what planet you want to go to")
     while True:
         try:
-            print("Press 1 to go back to Blam, press 2 for Axiom, press 3 for Delta Majora or press 4 to restart:")
-            planet_choice = input()
+            print("Press 1 to to Axiom, press 2 for Delta Majora or press 3 to restart:")
+            planet_choice = int(input())
             if planet_choice == 1:
-                planet_name = planets[0]
+                planet_name = planets[1]
+                fuel_in_ship -= fuel_used[0]
                 planet()
                 break
             elif planet_choice == 2:
-                planet_name = planets[1]
+                planet_name = planets[2]
+                fuel_in_ship -= fuel_used[1]
                 planet()
                 break
             elif planet_choice == 3:
-                planet_name = planets[2]
-                planet()
-                break
-            elif planet_choice == 4:
                 restart()
                 break
             else:
@@ -346,9 +376,56 @@ def planet():
     global planet_name
     global fuel_in_ship
     global fuel_value
+    global ship_parts
+    global fuel_used
     slow_type(f"You are now on the planet {planet_name}")
     print(f"You have {fuel_in_ship} units of fuel left in your ship")
     print(f"You have {fuel_value} units of fuel")
+
+    broken = random.randint(1,3) # Random number to decide whether the ship breaks or not
+    if broken == 1:
+        part = random.choice(["engine", "hull", "navigation"]) # Picks a random part to break
+        ship_parts[part] = "broken"
+        slow_type("Your landing was rough...")
+        for part in ship_parts:
+            print(part, ":", ship_parts[part])
+    print()
+    slow_type("What would you like to do?")
+    while True:
+        try:
+            print("1 Explore the planet")
+            print("2 Check ship status")
+            print("3 Continue journey")
+            print("4 Restart")
+
+            choice = int(input())
+            if choice == 1:
+                explore()
+                break
+            elif choice == 2:
+                print()
+                print("--Ship status--")
+                print(f"Planet: {planet_name}")
+                print(f"Fuel remaining in ship: {fuel_in_ship}")
+                print(f"Fuel in inventory: {fuel_value}")
+                print("Materials:")
+                print(f"Steel: {materials.count("steel")}")
+                print(f"Copper: {materials.count("copper")}")
+                print(f"Stone: {materials.count("stone")}")
+
+                print()
+            elif choice == 3:
+                next_planet()
+                break
+            elif choice == 4:
+                restart()
+                break
+            else:
+                print("That's not the right number")
+        except ValueError:
+            print("That's not a number")
+
+
 
 
 def lose_game():
@@ -356,7 +433,6 @@ def lose_game():
     slow_type("You lose...")
     slow_type("The game will restart in 10 seconds or press r to restart now")
     while True:
-        try:
             choice = input().lower()
             if choice == "r":
                 restart()
@@ -365,15 +441,12 @@ def lose_game():
                 print("That's not the right key but the game will restart now anyway")
                 restart()
                 break
-        except ValueError:
-            print("Input error")
 
 def win_game():
     slow_type("Congrats you made it back to earth!")
     slow_type("You win!!!")
     slow_type("The game will restart in 10 seconds or press r to restart now")
     while True:
-        try:
             choice = input().lower()
             if choice == "r":
                 restart()
@@ -382,12 +455,10 @@ def win_game():
                 print("That's not the right key but the game will restart now anyway")
                 restart()
                 break
-        except ValueError:
-            print("Input error")
 
 # Main
 start_menu()
-#take_off()
+#planet()
 
 
 #Testing/addition zone:
