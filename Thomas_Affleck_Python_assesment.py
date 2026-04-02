@@ -6,8 +6,8 @@ import time
 # Global variables
 materials = [] # Need to either make a dictionary with type and quantity or store multiple copies of same thing and then check over it to see how many in inventory.
 used_materials = []
-planets = ["Blam", "Axiom", "Delta Majora", "Earth"]
-fuel_value = 0
+planets = ["Blam", "Axiom", "Delta Majora", "Earth"] # Planet names so function can be reused
+fuel_value = 0 # Fuel in player inventory
 ship_fuel = 0
 ship_broken = True
 fuel_in_ship = 0
@@ -19,14 +19,14 @@ planet_name = 0
 hints = 5
 name = 0
 areas = ["Metal field", "Copper cave", "Stony plains"]
-ship_parts = {"engine": "ok", "hull": "ok", "navigation": "ok"}
-fuel_used = [15,20,25]
+ship_parts = {"engine": "ok", "hull": "ok", "navigation": "ok"} # Which part of the ship can break later
+fuel_used = [15,20,25] #  Different fuel amounts to use to travel to different planets
 planet_index = 0
 planet_name = planets[planet_index]
 
 
 # Functions
-def restart():
+def restart(): # Resets all variables that have been changed in gameplay
     global name
     global ship_broken
     global fuel_in_ship
@@ -64,7 +64,7 @@ def slow_type(sentence):  # Function to enable typewriter style typing.
         time.sleep(TEXT_SLEEP_TIME)
     print()
 
-def word_puzzle(word):
+def word_puzzle(word): # Takes word input, scrambles it and gives it to player to solve, then returns true or false
     letters = list(word)
     random.shuffle(letters)
     scrambled_word = "".join(letters)
@@ -107,7 +107,7 @@ def start_menu():  # Menu to run at start, need to add function to restart whene
     while True:
         try:
             name = input("What is your name? ")
-            if name.isalpha():
+            if name.isalpha(): # Checks if any numbers in name
                 title_name = name.title()
                 print(f"Your name is {title_name}")
                 game_menu()
@@ -121,7 +121,7 @@ def game_menu():
     global ship_broken
     global fuel_in_ship
     global fuel_value
-    if ship_broken == False and fuel_in_ship < 20:
+    if ship_broken == False and fuel_in_ship < 20: # Goes this way if ship is fixed but not fueled
         while True:
             try:
                 print("Press 1 to fuel your ship or 2 to get more fuel")
@@ -131,8 +131,8 @@ def game_menu():
                     break
                 elif choice2 == 2:
                     material = "fuel"
-                    if word_puzzle(material):
-                        fuel = random.randint(3,7)
+                    if word_puzzle(material): # Checks if player completes word puzzle
+                        fuel = random.randint(3,7) # Picks a random amount of fuel to give player
                         fuel_value += fuel
                         print(f"You found {fuel} units of fuel")
                         time.sleep(MATERIAL_SLEEP_TIME)
@@ -165,7 +165,7 @@ def game_menu():
                 print("That's not a number")
 
 
-def explore(): # Maybe similar to the pokemon game, going between areas? Could do word puzzles when in an area???
+def explore(): # Players pick an area and solve a word puzzle for materials and fuel
     global materials
     global fuel_value
     global planet_name
@@ -209,21 +209,22 @@ def explore(): # Maybe similar to the pokemon game, going between areas? Could d
         print(f"You found {fuel} units of fuel")
         time.sleep(MATERIAL_SLEEP_TIME)
 
-    if planet_name == "Blam":
+    if planet_name == "Blam": # Decides which function to send player back to
         game_menu()
     elif planet_name == "Axiom" or planet_name == "Delta Majora":
         planet()
 
 
 
-def garage():  # Make it so you also get fuel from this option, possibly raw oil to refine?? Need to decide how to run search for materials too, might design different areas...
+def garage():  # Where player fixes ship
     global materials # Function done? Think so...
     global used_materials
     global ship_broken
     global steel_count
     global copper_count
     global stone_count
-    steel_count = materials.count("steel")
+
+    steel_count = materials.count("steel") # Counting how many of each item player has to display
     copper_count = materials.count("copper")
     stone_count = materials.count("stone")
     if len(materials) == 0 and len(used_materials) == 0:
@@ -244,7 +245,7 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
                             print(f"Steel: {steel_count}")
                             print(f"Copper: {copper_count}")
                             print(f"Stone: {stone_count}")
-                            print("Please type what material you want to use, or type back to go back to the menu:")
+                            print("Please type what material you want to use, or type back to go back to the menu:") # Gives player option to go back and not get stuck here
                             materials_to_use = input().lower()
                             if materials_to_use == "back":
                                 game_menu()
@@ -263,7 +264,7 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
                             if quantity_materials_use == 0:
                                 game_menu()
                                 break
-                            elif quantity_materials_use > materials_count:  # Need to ensure that it checks the correct spot in the list for the quantity, should work now.
+                            elif quantity_materials_use > materials_count:  # Checks if player has enough of material
                                 print("You don't have enough of those!")
                             elif quantity_materials_use <= 0:
                                 print("That's not the right number!")
@@ -272,7 +273,7 @@ def garage():  # Make it so you also get fuel from this option, possibly raw oil
                                 print()
                                 print("Applying materials...")
                                 for i in range(quantity_materials_use): # Adding used materials to used materials list, so it can check if player has applied all the correct materials to ship.
-                                    used_materials.append(materials_to_use) # Might be not needed with thing below. Needed...
+                                    used_materials.append(materials_to_use) #
                                     materials.remove(materials_to_use)
                                 print(used_materials) # Temp to ensure items added to used list
                                 if used_materials.count("steel") >= 3 and used_materials.count("copper") >= 2 and used_materials.count("stone") >= 1:#3 steel, 2 copper, 1 stone
@@ -316,7 +317,7 @@ def fuel_menu(): # Player to select how much fuel to put into ship, links to a f
                 if fuel_into_ship == 0:
                     game_menu()
                     break
-                elif fuel_into_ship > fuel_value:
+                elif fuel_into_ship > fuel_value: # If player is trying to put in more than they have
                     print("You don't have that much fuel!")
                 elif fuel_into_ship < 0:
                     print("That's not the right number!")
@@ -345,7 +346,7 @@ def fuel_menu(): # Player to select how much fuel to put into ship, links to a f
 
 
 def take_off():
-    if ship_broken == True:
+    if ship_broken == True: # If player hasn't fixed the ship on further planets
         print("Your ship is still broken, you can't take off!")
         return
     slow_type("Your ship systems are coming back online...")
@@ -366,7 +367,7 @@ def take_off():
         except ValueError:
             print("How'd you mess that up?")
 
-def in_space():
+def in_space(): # When player has taken off.
     global planets
     global planet_name
     global fuel_in_ship
@@ -377,12 +378,12 @@ def in_space():
     global planet_index
 
     print("You are in space")
-    next_index = planet_index + 1
-    next_planet = planets[next_index]
-    fuel_cost = fuel_used[planet_index]
+    next_index = planet_index + 1 # Moving forward on the list of planet names
+    next_planet = planets[next_index] # Calling the next planet name
+    fuel_cost = fuel_used[planet_index] # Uses the amount of fuel linked to travelling to that planet
     print(f"You are travelling to {next_planet}")
     print(f"It will cost {fuel_cost} units of fuel")
-    if fuel_in_ship < fuel_cost:
+    if fuel_in_ship < fuel_cost: # If player tries to travel to final planet with not enough fuel
         lose_game()
         return
     else:
@@ -390,29 +391,29 @@ def in_space():
         slow_type("Travelling...")
         time.sleep(1)
         planet_index += 1
-        planet_name = planets[planet_index]
+        planet_name = planets[planet_index] # Gets planet name from list
         if planet_name == "Earth":
             win_game()
             return
         else:
-            random_chance = random.randint(1,1)
+            random_chance = random.randint(1,3) # Random chance whether the ship breaks or not
             if random_chance == 1:
                 random.shuffle(used_materials)
-                mat1 = random.randint(0,len(used_materials)-1)
+                mat1 = random.randint(0,len(used_materials)-1) # Remove one random material from ship
                 used_materials.pop(mat1)
-                mat2 = random.randint(0,len(used_materials)-1)
+                mat2 = random.randint(0,len(used_materials)-1) # Same as above again
                 used_materials.pop(mat2)
-                ship_broken = True
+                ship_broken = True # Sets ship to broken so can't take off
                 part = random.choice(["engine", "hull", "navigation"])  # Picks a random part to break
-                ship_parts[part] = "broken"
+                ship_parts[part] = "broken" # Sets the random chosen part to broken
                 slow_type("Your landing was rough...")
-                for part in ship_parts:
+                for part in ship_parts: # Prints out ship parts statuses
                     print(part, ":", ship_parts[part])
             slow_type(f"You landed on {planet_name}")
             planet()
 
 
-def planet():
+def planet(): # When on next two planets
     global planet_name
     global fuel_in_ship
     global fuel_value
@@ -452,7 +453,7 @@ def planet():
                 print(f"Steel: {materials.count('steel')}")
                 print(f"Copper: {materials.count('copper')}")
                 print(f"Stone: {materials.count('stone')}")
-                show_progress()
+                show_progress() # Shows what materials on the ship broke and need replaced
 
                 print()
 
@@ -480,7 +481,7 @@ def planet():
 
 
 
-def lose_game():
+def lose_game(): # When you lose
     slow_type("You are stuck in space")
     slow_type("You lose...")
     slow_type("The game will restart in 10 seconds or press r to restart now")
@@ -489,12 +490,12 @@ def lose_game():
             if choice == "r":
                 restart()
                 break
-            else:
+            else: # Restarts after 10 seconds
                 time.sleep(10)
                 restart()
                 break
 
-def win_game():
+def win_game(): # When you win
     slow_type("Congrats you made it back to earth!")
     slow_type("You win!!!")
     slow_type("The game will restart in 10 seconds or press r to restart now")
@@ -503,31 +504,31 @@ def win_game():
             if choice == "r":
                 restart()
                 break
-            else:
+            else: # Restarts after 10 seconds
                 time.sleep(10)
                 restart()
                 break
 
-def next_planet():
+def next_planet(): # When player tries to move to next planet
     global ship_broken
     global fuel_in_ship
     global fuel_value
     global fuel_used
 
-    if ship_broken == True:
+    if ship_broken == True: # If player hasn't fixed ship
         print("Your ship is still damaged, you need to fix it before taking off")
         planet()
         return
-    if fuel_in_ship < 20:
+    if fuel_in_ship < 20: # If player hasn't fueled ship
         print("You need to fuel your ship before travelling")
         planet()
         return
-    take_off()
+    take_off() # If player meets both criteria
 
 
 
-def planet_garage():
-    global materials  # Function done? Think so...
+def planet_garage(): # Same as earlier garage but links back to planet()
+    global materials
     global used_materials
     global ship_broken
     global steel_count
@@ -584,8 +585,8 @@ def planet_garage():
         except ValueError:
             print("That's not right")
 
-def planet_fuel_menu(): # Player to select how much fuel to put into ship, links to a function at the end if ship is fueled and fixed, otherwise returns to menu
-    global ship_broken  # Function done?
+def planet_fuel_menu(): # If player picks to fuel ship when on later planets
+    global ship_broken
     global fuel_value
     global fuel_in_ship
     if fuel_value <= 0:  # Checks to see if player has fuel to put in ship
@@ -618,12 +619,5 @@ def planet_fuel_menu(): # Player to select how much fuel to put into ship, links
 
 # Main
 start_menu()
-#planet()
 
-
-#Testing/addition zone:
-
-#materials_count = materials.count("Stone")
-#print(materials_count)
-#materials.remove(materials_to_use)
 
