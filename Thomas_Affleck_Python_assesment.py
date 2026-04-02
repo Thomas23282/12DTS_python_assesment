@@ -275,7 +275,6 @@ def garage():  # Where player fixes ship
                                 for i in range(quantity_materials_use): # Adding used materials to used materials list, so it can check if player has applied all the correct materials to ship.
                                     used_materials.append(materials_to_use) #
                                     materials.remove(materials_to_use)
-                                print(used_materials) # Temp to ensure items added to used list
                                 if used_materials.count("steel") >= 3 and used_materials.count("copper") >= 2 and used_materials.count("stone") >= 1:#3 steel, 2 copper, 1 stone
                                     print("You have fixed your ship!")
                                     ship_broken = False
@@ -573,7 +572,6 @@ def planet_garage(): # Same as earlier garage but links back to planet()
                 for i in range(quantity_materials_use):  # Adding used materials to used materials list, so it can check if player has applied all the correct materials to ship.
                     used_materials.append(materials_to_use)  # Might be not needed with thing below. Needed...
                     materials.remove(materials_to_use)
-                print(used_materials)  # Temp to ensure items added to used list
                 if used_materials.count("steel") >= 3 and used_materials.count("copper") >= 2 and used_materials.count("stone") >= 1:  # 3 steel, 2 copper, 1 stone
                     print("You have fixed your ship!")
                     ship_broken = False
